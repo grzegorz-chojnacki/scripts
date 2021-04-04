@@ -1,0 +1,55 @@
+#!/bin/bash
+
+favorites='https://www.youtube.com/playlist?list=FLg4KiSt9-Iqdq9d9NDCSJ9A'
+parameters=(
+  -o "~/Downloads/ytdl/%(title)s.%(ext)s"
+  --cookies cookies.txt
+  --yes-playlist
+  --add-metadata
+  -x
+  --audio-format mp3
+  --audio-quality 256K
+  --metadata-from-title "%(artist)s - %(title)s"
+)
+
+export_list () {
+  if [ -d $1 ]; then
+    ls $1 | sed s/.mp3//
+  else
+    echo "$1 doesn't exists"
+  fi
+}
+
+download () {
+  if [ -z "$1" ]; then
+    read -p 'Paste url: ' url
+  else
+    url=$1
+  fi
+  youtube-dl $url ${parameters[@]}
+}
+
+
+PS3='Choose one option: '
+options=(
+  'Download favorites'
+  'Download from url'
+  'List all'
+  'List downloaded'
+  'Quit'
+)
+
+select opt in "${options[@]}"; do
+  case "$REPLY" in
+    1) download $favorites;           break ;;
+    2) download '';                   break ;;
+    3) export_list ~/Music/CiuMPe3ki; break ;;
+    4) export_list ~/Download/ytdl;   break ;;
+    5) exit ;;
+    *) echo "Option not valid"
+  esac
+done
+
+# ToDo:
+# Naprawić ERROR: '-' is not a valid URL. Set --default-search "ytsearch" (or run  youtube-dl "ytsearch:-" ) to search YouTube
+# Wyłączyć 'yes-playlist' dla pojedynczego url'a
