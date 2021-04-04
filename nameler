@@ -24,14 +24,14 @@ def vowel(): return letter('vowel')
 def consonant(): return letter('consonant')
 
 
-def start_end():
-    return '' if random() > 0.5 else consonant()
+def start(): return '' if random() > 0.5 else consonant()
+def end(): return '' if random() > 0.5 else vowel()
 
 
 def middle(count):
     return ''.join(vowel() + consonant() for _ in range(count))
 
 
-name = (start_end() + middle(LENGTH) + start_end())
+name = start() + middle(LENGTH) + end()
 
 print(name.capitalize())
