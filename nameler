@@ -1,7 +1,7 @@
 #!/bin/env python3
+from sys import argv
 from random import choices, randint, random
 
-LENGTH = randint(2, 4)
 ALPHABET = {
     'consonant': {
         'r': 38.64, 't': 35.43, 'n': 33.92, 's': 29.23, 'l': 27.98, 'c': 23.13,
@@ -10,7 +10,7 @@ ALPHABET = {
         'j':  1.00, 'q':  1.00
     },
     'vowel': {
-        'e': 56.88, 'a': 43.31, 'i': 38.45, 'o': 36.51, 'u': 18.51, 'y': 9.06
+        'e': 56.88, 'a': 43.31, 'i': 38.45, 'o': 36.51, 'u': 18.51, 'y':  9.06
     }
 }
 
@@ -32,6 +32,7 @@ def word(length):
     return ''.join(vowel() + consonant() for _ in range(length))
 
 
-name = maybe(consonant) + word(LENGTH) + maybe(vowel)
+length = int(argv[1]) if len(argv) > 1 else randint(2, 4)
+name = maybe(consonant) + word(length) + maybe(vowel)
 
 print(name.capitalize())
