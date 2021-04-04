@@ -1,18 +1,37 @@
 #!/bin/env python3
-import random as r
+from random import choices, randint, random
 
-CONSONANT = 'bcdfghjklmnpqrstvwxz'
-VOWEL = 'aeiouy'
+LENGTH = randint(2, 3)
+ALPHABET = {
+    'consonant': {
+        'r': 38.64, 't': 35.43, 'n': 33.92, 's': 29.23, 'l': 27.98, 'c': 23.13,
+        'd': 17.25, 'p': 16.14, 'm': 15.36, 'h': 15.31, 'g': 12.59, 'b': 10.56,
+        'f':  9.24, 'w':  6.57, 'k':  5.61, 'v':  5.13, 'x':  1.48, 'z':  1.39,
+        'j':  1.00, 'q':  1.00
+    },
+    'vowel':
+        {'e': 56.88, 'a': 43.31, 'i': 38.45, 'o': 36.51, 'u': 18.51, 'y': 9.06}
+}
 
 
-def sylable():
-    return r.choice(VOWEL) + r.choice(CONSONANT)
+def letter(kind):
+    letters = list(ALPHABET[kind].keys())
+    weights = list(ALPHABET[kind].values())
+    return choices(letters, weights)[0]
 
 
-def inout():
-    return '' if r.random() > 0.5 else r.choice(CONSONANT)
+def vowel(): return letter('vowel')
+def consonant(): return letter('consonant')
 
 
-name = inout() + ''.join(sylable() for _ in range(r.randint(2, 3))) + inout()
+def start_end():
+    return '' if random() > 0.5 else consonant()
+
+
+def middle(count):
+    return ''.join(vowel() + consonant() for _ in range(count))
+
+
+name = (start_end() + middle(LENGTH) + start_end())
 
 print(name.capitalize())
