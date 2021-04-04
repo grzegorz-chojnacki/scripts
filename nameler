@@ -1,0 +1,18 @@
+#!/bin/env python3
+import random as r
+
+CONSONANT = 'bcdfghjklmnpqrstvwxz'
+VOWEL = 'aeiouy'
+
+
+def sylable():
+    return r.choice(VOWEL) + r.choice(CONSONANT)
+
+
+def inout():
+    return '' if r.random() > 0.5 else r.choice(CONSONANT)
+
+
+name = inout() + ''.join(sylable() for _ in range(r.randint(2, 3))) + inout()
+
+print(name.capitalize())
