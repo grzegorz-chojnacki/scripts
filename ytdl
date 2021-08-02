@@ -4,7 +4,6 @@ favorites='https://www.youtube.com/playlist?list=FLg4KiSt9-Iqdq9d9NDCSJ9A'
 parameters=(
   -o "~/Downloads/ytdl/%(title)s.%(ext)s"
   --cookies cookies.txt
-  --yes-playlist
   --add-metadata
   -x
   --audio-format mp3
@@ -22,11 +21,12 @@ export_list () {
 
 download () {
   if [ -z "$1" ]; then
-    read -p 'Paste url: ' url
+    read -p "Paste url: " url
+    youtube-dl "$url" ${parameters[@]}
   else
-    url=$1
+    url="$1"
+    youtube-dl "$url" ${parameters[@]} --yes-playlist
   fi
-  youtube-dl $url ${parameters[@]}
 }
 
 
