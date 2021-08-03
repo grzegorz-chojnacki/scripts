@@ -1,5 +1,6 @@
 #!/bin/env python3
 from sys import argv
+from os.path import expanduser
 from random import choices, randint
 
 VOWELS='aeiouy'
@@ -25,7 +26,7 @@ def tail(previous, n):
 
 # 2D matrix with weights for choosing one letter after another
 # First row contains weights for choosing the first letter of a word
-with open('letter-weights.csv') as data:
+with open(expanduser('~/scripts/letter-weights.csv')) as data:
     letters = 'abcdefghijklmnopqrstuvwxyz'
     for (first, line) in zip(iter('^' + letters), data.readlines()):
         AFTER[first] = {}
