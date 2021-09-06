@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -z "$1" || -z "$2"  ]]; then
-  echo "usage: $(basename $0) image audio"
+  echo "usage: $(basename "$0") image audio"
   exit 1
 fi
 
