@@ -1,0 +1,99 @@
+#!/bin/env python3
+import sys
+import os
+import re
+from dataclasses import dataclass
+from mutagen.easyid3 import EasyID3
+from mutagen.id3 import ID3, ID3NoHeaderError
+
+
+@dataclass
+class Track:
+    filename: str
+    artists: list[str]
+    title: str
+    tags: EasyID3
+
+    def artist_tag(self):
+        return ';'.join(self.artists)
+
+
+def load_tags(filename: str):
+    try:
+        return EasyID3(filename)
+    except ID3NoHeaderError:
+        tags = ID3()
+        tags.save(filename)
+        print(f'[INFO] "{filename}" did not have ID3 tags!')
+        return EasyID3(filename)
+
+
+def parse(file):
+    artists, title = re.split(' - ', file.name)
+    artists = re.split(' x ', artists)
+
+    assert len(artists) > 0 and len(title) > 0
+    return Track(file.name, artists, title.removesuffix('.mp3'), load_tags(file.name))
+
+
+def retag(track: Track):
+    title = track.tags.get('title', [''])[0]
+    artist = track.tags.get('artist', [''])[0]
+
+    track.tags['title'] = track.title
+    track.tags['artist'] = track.artist_tag()
+
+    if artist != track.tags['artist'] or title != track.tags['title']:
+        return True, (artist, title)
+    else:
+        return False, None
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 2:
+        print(f'usage: {sys.argv[0]} [directory]')
+        exit(1)
+
+    if len(sys.argv) == 2:
+        try:
+            os.chdir(sys.argv[1])
+        except:
+            print(f'[ERROR] could not access path "{sys.argv[1]}"')
+            exit(2)
+
+    print(f'[INFO] Working in {os.getcwd()}')
+
+    artists = set()
+    conflicted = []
+    file_names = [f for f in os.listdir()
+                  if os.path.isfile(f) and f.endswith('.mp3')]
+
+    print(f'[INFO] Found {len(file_names)} mp3 file(s)')
+
+    for file_name in sorted(file_names):
+        with open(file_name) as file:
+            try:
+                track = parse(file)
+                artists.update(track.artists)
+
+                changed, old = retag(track)
+                if changed:
+                    conflicted.append(track)
+                    print(
+                        f"[RETAG] {old} -> ('{track.artist_tag()}', '{track.title}')")
+
+            except AssertionError:
+                print(f'[WARN] Could not parse "{file_name}"!')
+
+    if len(conflicted) == 0:
+        print(f'[INFO] There is nothing to do')
+        exit(0)
+
+    print(f'[INFO] Found {len(conflicted)} file(s) with wrong tags')
+
+    if input('Proceed? [y/N] ') in ['y', 'Y']:
+        for track in conflicted:
+            track.tags.save()
+        print(f'[INFO] Saved {len(conflicted)} files')
+    else:
+        print('[INFO] Abort')
