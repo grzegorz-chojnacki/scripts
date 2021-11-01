@@ -12,8 +12,8 @@ parameters=(
 )
 
 export_list () {
-  if [ -d $1 ]; then
-    ls $1 | sed s/.mp3//
+  if [ -d "$1" ]; then
+    ls "$1" | sed s/.mp3//
   else
     echo "$1 doesn't exists"
   fi
@@ -41,7 +41,7 @@ options=(
 
 select opt in "${options[@]}"; do
   case "$REPLY" in
-    1) download $favorites;           break ;;
+    1) download "$favorites";         break ;;
     2) download '';                   break ;;
     3) export_list ~/Music/CiuMPe3ki; break ;;
     4) export_list ~/Download/ytdl;   break ;;
@@ -52,4 +52,3 @@ done
 
 # ToDo:
 # Naprawić ERROR: '-' is not a valid URL. Set --default-search "ytsearch" (or run  youtube-dl "ytsearch:-" ) to search YouTube
-# Wyłączyć 'yes-playlist' dla pojedynczego url'a
