@@ -28,12 +28,12 @@ def load_tags(filename: str):
         return EasyID3(filename)
 
 
-def parse(file):
-    artists, title = re.split(' - ', file.name)
+def parse(filename: str):
+    artists, title = re.split(' - ', filename)
     artists = re.split(' x ', artists)
 
     assert len(artists) > 0 and len(title) > 0
-    return Track(file.name, artists, title.removesuffix('.mp3'), load_tags(file.name))
+    return Track(filename, artists, title.removesuffix('.mp3'), load_tags(filename))
 
 
 def retag(track: Track):
@@ -45,25 +45,24 @@ def retag(track: Track):
 
     if artist != track.tags['artist'] or title != track.tags['title']:
         return True, (artist, title)
-    else:
-        return False, None
+
+    return False, None
 
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
         print(f'usage: {sys.argv[0]} [directory]')
-        exit(1)
+        sys.exit(1)
 
     if len(sys.argv) == 2:
         try:
             os.chdir(sys.argv[1])
-        except:
+        except FileNotFoundError:
             print(f'[ERROR] could not access path "{sys.argv[1]}"')
-            exit(2)
+            sys.exit(2)
 
     print(f'[INFO] Working in {os.getcwd()}')
 
-    artists = set()
     conflicted = []
     file_names = [f for f in os.listdir()
                   if os.path.isfile(f) and f.endswith('.mp3')]
@@ -73,9 +72,7 @@ if __name__ == '__main__':
     for file_name in sorted(file_names):
         with open(file_name) as file:
             try:
-                track = parse(file)
-                artists.update(track.artists)
-
+                track = parse(file.name)
                 changed, old = retag(track)
                 if changed:
                     conflicted.append(track)
@@ -86,8 +83,8 @@ if __name__ == '__main__':
                 print(f'[WARN] Could not parse "{file_name}"!')
 
     if len(conflicted) == 0:
-        print(f'[INFO] There is nothing to do')
-        exit(0)
+        print('[INFO] There is nothing to do')
+        sys.exit(0)
 
     print(f'[INFO] Found {len(conflicted)} file(s) with wrong tags')
 
