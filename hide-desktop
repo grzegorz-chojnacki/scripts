@@ -1,0 +1,14 @@
+#!/bin/bash
+# Sets all active workspaces to new, empty ones
+
+# Get id's of active and visible workspaces
+active_ws=$(i3-msg -t get_workspaces | jq '.[] | .num')
+visible_ws=($(i3-msg -t get_workspaces | jq '.[] | select(.visible).num'))
+
+# Get id's of inactive workspaces
+# Concatenate two lists, put elements to separate lines, filter non-duplicated id's
+inactive_ws=($(echo "$active_ws" "$(seq 1 9)" | tr ' ' '\n' | sort | uniq -u))
+
+for i in "${!visible_ws[@]}"; do
+  i3-msg -t run_command workspace number "${visible_ws[$i]}", workspace number "${inactive_ws[$i]}"
+done;
