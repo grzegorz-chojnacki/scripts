@@ -10,5 +10,5 @@ visible_ws=($(i3-msg -t get_workspaces | jq '.[] | select(.visible).num'))
 inactive_ws=($(echo "$active_ws" "$(seq 1 9)" | tr ' ' '\n' | sort | uniq -u))
 
 for i in "${!visible_ws[@]}"; do
-  i3-msg -t run_command workspace number "${visible_ws[$i]}", workspace number "${inactive_ws[$i]}"
+  i3-msg "workspace number ${visible_ws[$i]}, workspace number ${inactive_ws[$i]}"
 done;
