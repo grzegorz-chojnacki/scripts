@@ -1,14 +1,19 @@
 #!/bin/bash
 # Sets all active workspaces to new, empty ones
 
-# Get id's of active and visible workspaces
-active_ws=$(i3-msg -t get_workspaces | jq '.[] | .num')
-visible_ws=($(i3-msg -t get_workspaces | jq '.[] | select(.visible).num'))
+# Get id's of workspaces visible on outputs
+visible=($(i3-msg -t get_workspaces | jq '.[] | select(.visible).num' | sort))
 
-# Get id's of inactive workspaces
+# Get id's of active workspaces (visible or exists and has windows)
+active=$(i3-msg -t get_workspaces | jq '.[] | .num')
+
+# Get id's of inactive (doesn't exist) workspaces
 # Concatenate two lists, put elements to separate lines, filter non-duplicated id's
-inactive_ws=($(echo "$active_ws" "$(seq 1 9)" | tr ' ' '\n' | sort | uniq -u))
+inactive=($(echo "$active" "$(seq 1 9)" | tr ' ' '\n' | sort | uniq -u))
 
-for i in "${!visible_ws[@]}"; do
-  i3-msg "workspace number ${visible_ws[$i]}, workspace number ${inactive_ws[$i]}"
+# assert that lists can be zipped together
+[ "${#inactive[@]}" -lt "${#visible[@]}" ] && exit
+
+for i in "${!visible[@]}"; do
+  i3-msg "workspace number ${visible[$i]}, workspace number ${inactive[$i]}"
 done;
