@@ -1,0 +1,12 @@
+#!/bin/bash
+# Swaps workspaces on two outputs
+
+# Get id's of visible workspaces
+ws=($(i3-msg -t get_workspaces | jq '.[] | select(.visible).num'))
+focused=$(i3-msg -t get_workspaces | jq '.[] | select(.focused).num')
+
+# To swap workspace we first need to focus it
+# (Output position doesn't matter as it will wrap around)
+i3-msg "workspace number ${ws[0]}, move workspace to output left,\
+        workspace number ${ws[1]}, move workspace to output left,\
+        workspace number $focused"
