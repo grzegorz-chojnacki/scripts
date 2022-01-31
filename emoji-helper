@@ -1,0 +1,6 @@
+#!/bin/bash
+
+config=~/.config/i3/config
+emojis=$(sed -nE 's/.*(.) exec .xdotool type (.).*/\1: \2/p' $config)
+
+notify-send 'Emoji' "$(sed -nE 's/.*(.) exec .xdotool type (.).*/\1: \2/p' $config | pr -ts' ' --columns 3)"
