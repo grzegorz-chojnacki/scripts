@@ -1,0 +1,4 @@
+#!/bin/bash
+
+title=$(deadbeef --nowplaying '%f')
+notify-send "Now playing:" "${title::-4}" -u low
