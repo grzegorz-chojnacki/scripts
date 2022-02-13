@@ -1,4 +1,5 @@
 #!/bin/bash
 
-title=$(deadbeef --nowplaying '%f')
-notify-send "Now playing:" "${title::-4}" -u low
+deadbeef --nowplaying '%f' \
+  | sed -nE "s/(.*) - (.*).mp3/'\1'\n'\2'/p" \
+  | xargs -L 2 notify-send -u low
