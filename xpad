@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Must be in paired-devices
+MAC='C8:3F:26:4A:FA:B4'
+
+notify-send 'XPad bluetooth' 'Attempting to connect...' -u low
+
 bluetoothctl power on
-bluetoothctl scan on
-bluetoothctl connect C8:3F:26:4A:FA:B4
+bluetoothctl disconnect $MAC
+bluetoothctl connect $MAC
