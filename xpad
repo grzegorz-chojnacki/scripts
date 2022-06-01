@@ -7,4 +7,10 @@ notify-send 'XPad bluetooth' 'Attempting to connect...' -u low
 
 bluetoothctl power on
 bluetoothctl disconnect $MAC
-bluetoothctl connect $MAC
+status=$(bluetoothctl connect $MAC)
+
+if [[ $(echo "$status" | grep -i 'fail') ]]; then
+  notify-send 'XPad bluetooth' 'Failed to connect' -u low
+else
+  notify-send 'XPad bluetooth' 'Successfully connected' -u low
+fi
