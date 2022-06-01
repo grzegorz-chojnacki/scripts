@@ -1,0 +1,9 @@
+#!/bin/bash
+
+emojis="${0}.csv"
+
+[[ ! -f "$emojis" ]] && echo "Could not open $emojis file!" && exit 1
+
+choice=$(cat "$emojis" | rofi -dmenu | sed -nE 's/(.*)\t.*/\1/p')
+
+[[ -n "$choice" ]] && echo -n "$choice" | xclip -selection clipboard
