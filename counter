@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import sys
+
+def up(n):
+    print(n, end='')
+    if input() == 'q': return
+    up(n+1)
+
+
+def down(n):
+    if (n < 0): return
+    print(n, end='')
+    if input() == 'q': return
+    down(n-1)
+
+
+if len(sys.argv) > 2 or not isinstance(sys.argv[1], int) or not sys.argv[1] > 0:
+    print(f'usage: {sys.argv[0]} [ Positive integer ]')
+    exit(1)
+
+if len(sys.argv) == 1:
+    up(0)
+else:
+    down(int(sys.argv[1]))
