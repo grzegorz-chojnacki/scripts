@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, ID3NoHeaderError
 
+# TODO: Collect all artists to one set and fuzzy search for errors/capitalization
+# TODO: Add dry-run and artist-deduplication flag
 
 @dataclass
 class Track:
@@ -43,7 +45,7 @@ def retag(track: Track):
     track.tags['title'] = track.title
     track.tags['artist'] = track.artist_tag()
 
-    if artist != track.tags['artist'] or title != track.tags['title']:
+    if artist != track.artist_tag() or title != track.title:
         return True, (artist, title)
 
     return False, None

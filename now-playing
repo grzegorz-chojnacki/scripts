@@ -3,3 +3,5 @@
 deadbeef --nowplaying '%f' \
   | sed -nE "s/(.*) - (.*).mp3/'\1'\n'\2'/p" \
   | xargs -L 2 notify-send -u low
+
+[[ $? -gt 0 ]] && notify-send -u low 'DeadBeef' 'Nothing is playing'

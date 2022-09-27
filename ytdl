@@ -3,7 +3,7 @@
 favorites='https://www.youtube.com/playlist?list=FLg4KiSt9-Iqdq9d9NDCSJ9A'
 parameters=(
   -o "~/Downloads/ytdl/%(title)s.%(ext)s"
-  --cookies cookies.txt
+  --cookies "~/scripts/cookies.txt"
   --add-metadata
   -x
   --audio-format mp3
@@ -50,5 +50,5 @@ select opt in "${options[@]}"; do
   esac
 done
 
-# ToDo:
+# TODO:
 # Naprawić ERROR: '-' is not a valid URL. Set --default-search "ytsearch" (or run  youtube-dl "ytsearch:-" ) to search YouTube
