@@ -13,12 +13,16 @@ def down(n):
     if input() == 'q': return
     down(n-1)
 
-
-if len(sys.argv) > 2 or not isinstance(sys.argv[1], int) or not sys.argv[1] > 0:
+try:
+    assert len(sys.argv) <= 2
+    if len(sys.argv) == 1:
+        up(0)
+    else:
+        n = int(sys.argv[1])
+        assert n > 0
+        down(n)
+except Exception:
     print(f'usage: {sys.argv[0]} [ Positive integer ]')
     exit(1)
-
-if len(sys.argv) == 1:
-    up(0)
-else:
-    down(int(sys.argv[1]))
+except KeyboardInterrupt:
+    exit(0)
