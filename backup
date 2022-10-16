@@ -1,0 +1,20 @@
+#!/bin/bash
+
+backup="$HOME/backup"
+paths=(
+  "$HOME/Calibre"
+  "$HOME/Documents"
+  "$HOME/Music"
+  "$HOME/pg"
+  "$HOME/Pictures"
+  "$HOME/notes.md"
+)
+
+day=$(date +%A)
+
+# if [ -e "$backup/$day" ] ; then
+#   rm -fr "$backup/$day"
+# fi
+
+mkdir -p "$backup/$day"
+rsync -a --delete --info=progress2 ${paths[@]} "$backup/$day"
