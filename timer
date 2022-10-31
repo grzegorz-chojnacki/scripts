@@ -1,13 +1,39 @@
 #!/bin/bash
 
-start=$(date -u +'%s')
-echo -e 'Elapsed time (Press ENTER to stop):\n'
+read -r -d '' help << EOF
+$(basename $0): [[[ hours ] minutes ] seconds ]
+
+  When no arguments are passed it shows the elapsed time.
+  You can also specify hours, minutes and seconds for a countdown timer.
+EOF
+
+if [[ "$@" =~ '-h' ]]; then echo "$help"; exit 0; fi
+
+# Parse arguments if there is at least one
+if [ -n "$1" ]; then
+  # User supplied arguments - countdown mode
+  hours="0"; minutes="0"; seconds="$1"
+
+  # Check if more arguments were supplied - shift values accordingly
+  if [ -n "$2" ]; then             minutes="$1"; seconds="$2"; fi
+  if [ -n "$3" ]; then hours="$1"; minutes="$2"; seconds="$3"; fi
+
+  # Try to offset current time by the user's input
+  start=$(date -u -d "+ $hours hours $minutes minutes $seconds seconds" +'%s' 2>/dev/null)
+  [ $? -ne 0 -o -n "$4" ] && echo "$help" && exit 1
+
+  echo -e 'Time left (Press ENTER to stop):\n'
+else
+  # No arguments - timer mode
+  start=$(date -u +'%s')
+  echo -e 'Elapsed time (Press ENTER to stop):\n'
+fi
 
 while true; do
   now=$(date -u +'%s')
   diff=$(($now - $start))
-  elapsed=$(date -ud "@$diff" +'%H:%M:%S')
-
+  # Convert diff to an absolute value by removing '-'
+  elapsed=$(date -ud "@${diff#-}" +'%H:%M:%S')
   echo -e '\e[1A\e[K'"$elapsed"
 
   # Wait for user input
