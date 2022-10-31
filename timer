@@ -1,0 +1,17 @@
+#!/bin/bash
+
+start=$(date -u +'%s')
+echo -e 'Elapsed time (Press ENTER to stop):\n'
+
+while true; do
+  now=$(date -u +'%s')
+  diff=$(($now - $start))
+  elapsed=$(date -ud "@$diff" +'%H:%M:%S')
+
+  echo -e '\e[1A\e[K'"$elapsed"
+
+  # Wait for user input
+  read -r -s -t 1
+  retval=$?
+  [ $retval -gt 128 ] || break
+done
