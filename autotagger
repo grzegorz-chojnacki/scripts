@@ -31,8 +31,12 @@ def load_tags(filename: str):
 
 
 def parse(filename: str):
-    artists, title = re.split(' - ', filename)
-    artists = re.split(' x ', artists)
+    try:
+        artists, title = re.split(' - ', filename)
+        artists = re.split(' x ', artists)
+    except ValueError:
+        print(f"File '{filename}' doesn't conform to the '<artists> - <title>' format")
+        sys.exit(1)
 
     assert len(artists) > 0 and len(title) > 0
     return Track(filename, artists, title.removesuffix('.mp3'), load_tags(filename))
@@ -61,7 +65,7 @@ if __name__ == '__main__':
             os.chdir(sys.argv[1])
         except FileNotFoundError:
             print(f'[ERROR] could not access path "{sys.argv[1]}"')
-            sys.exit(2)
+            sys.exit(1)
 
     print(f'[INFO] Working in {os.getcwd()}')
 
