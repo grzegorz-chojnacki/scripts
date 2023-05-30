@@ -1,0 +1,12 @@
+#!/bin/bash
+
+today=$(date --iso)
+diary="$HOME/diary.md"
+
+if [[ ! -f "$diary" ]]; then
+  echo "# $today" > "$diary"
+elif [[ "$(head -n1 $diary)" != "# $today" ]]; then
+  sed -i -e "1i # $today" "$diary"
+fi
+
+$EDITOR "$diary"
