@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "$1" = '-h' ]; then
+  echo "usage: $(basename $0) [FILENAME]"
+  echo ""
+  echo "Sample desktop audio and save as 'FILENAME.wav' or 'out.wav'."
+  echo "Beginning silence is removed and the audio is normalized."
+  exit
+fi
+
+input=$(pactl list short sources | grep 'analog-stereo.monitor' | cut --field=2)
+output=${1:-out}
+
+ffmpeg -hide_banner -f pulse -i "$input" -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' "$output.wav"
