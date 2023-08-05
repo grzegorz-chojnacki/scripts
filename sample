@@ -11,4 +11,4 @@ fi
 input=$(pactl list short sources | grep 'analog-stereo.monitor' | cut --field=2)
 output=${1:-out}
 
-ffmpeg -hide_banner -f pulse -i "$input" -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' "$output.wav"
+ffmpeg -hide_banner -f pulse -i "$input" -ar 48000 -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' "$output.wav"
