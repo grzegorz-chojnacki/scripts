@@ -1,5 +1,9 @@
 #!/bin/bash
 
+function youtube-dl() {
+  yt-dlp $@
+}
+
 favorites='https://www.youtube.com/playlist?list=FLg4KiSt9-Iqdq9d9NDCSJ9A'
 parameters=(
   -o "~/Downloads/ytdl/%(title)s.%(ext)s"
