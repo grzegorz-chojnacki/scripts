@@ -1,6 +1,8 @@
 #!/bin/bash
 
-if [ "$1" = '-h' ]; then
+FLAGS=''
+
+if [[ "$1" = '-h' || "$1" = '--help' ]]; then
   echo "usage: $(basename $0) [FILENAME]"
   echo ""
   echo "Sample desktop audio and save as 'FILENAME.wav' or 'out.wav'."
@@ -8,7 +10,18 @@ if [ "$1" = '-h' ]; then
   exit
 fi
 
-input=$(pactl list short sources | grep 'analog-stereo.monitor' | cut --field=2)
-output=${1:-out}
+# Use 'out' as a default file name, make sure that it has a 'wav' extension
+output="${1:-out}"
+output="${output%%.wav}.wav"
 
-ffmpeg -hide_banner -f pulse -i "$input" -ar 48000 -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' "$output.wav"
+if [[ -e "$output" ]]; then
+  echo "File '$output' already exists!"
+  exit 1
+fi
+
+device=$(pactl list short sources | grep 'analog-stereo.monitor' | cut --field=2)
+
+echo "Recording audio from '$device' to '$output'"
+echo 'Press [q] to stop, [?] for help'
+ffmpeg -f pulse -i "$device" -f wav -loglevel quiet -stats - | \
+  ffmpeg -i - -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' -loglevel quiet "$output"
