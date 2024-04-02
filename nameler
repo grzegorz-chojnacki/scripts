@@ -4,11 +4,8 @@ from argparse import ArgumentParser
 from os.path import expanduser
 from random import choices, randint
 
-VOWELS='aeiouy'
+VOWELS = 'aeiouy'
 AFTER = {}
-
-def letterOf(index):
-    return chr(ord('a') + index)
 
 
 def draw(dictionary):
@@ -38,13 +35,15 @@ with open(expanduser('~/scripts/letter-weights.csv')) as data:
 
 parser = ArgumentParser(prog=argv[0])
 parser.add_argument('-l', '--length', type=int, default=randint(4, 10))
+parser.add_argument('-i', '--init', type=str, default='')
 args = parser.parse_args()
 
 length = args.length
+init = args.init.lower() or draw(AFTER['^'])
+
 if length < 0:
     print('error: length cannot be negative!')
     exit(1)
 elif length > 0:
-    head = draw(AFTER['^'])
-    name = head + tail(head, length - 1)
+    name = init + tail(init[-1], length - 1)
     print(name.capitalize())
