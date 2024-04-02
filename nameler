@@ -1,5 +1,6 @@
 #!/bin/env python3
 from sys import argv
+from argparse import ArgumentParser
 from os.path import expanduser
 from random import choices, randint
 
@@ -35,10 +36,15 @@ with open(expanduser('~/scripts/letter-weights.csv')) as data:
             bias = 1.0 if first == '^' or (first in VOWELS) ^ (second in VOWELS) else 0.7
             AFTER[first][second] = float(weight) * bias
 
+parser = ArgumentParser(prog=argv[0])
+parser.add_argument('-l', '--length', type=int, default=randint(4, 10))
+args = parser.parse_args()
 
-length = int(argv[1]) if len(argv) > 1 else randint(4, 10)
-
-if length > 0:
+length = args.length
+if length < 0:
+    print('error: length cannot be negative!')
+    exit(1)
+elif length > 0:
     head = draw(AFTER['^'])
     name = head + tail(head, length - 1)
     print(name.capitalize())
