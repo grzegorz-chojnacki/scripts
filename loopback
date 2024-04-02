@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ $(pw-cli ls | grep 'pw-loopback') ]]; then
+  pw-cli destroy 'pw-loopback'
+  exit 0
+fi
+
+pw-loopback -l 10 -n "pw-loopback-script" &
+
+

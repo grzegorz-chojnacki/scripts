@@ -1,0 +1,27 @@
+#!/bin/bash
+
+FLAGS=''
+
+if [[ "$1" = '-h' || "$1" = '--help' ]]; then
+  echo "usage: $(basename $0) [FILENAME]"
+  echo ""
+  echo "Sample desktop audio and save as 'FILENAME.wav' or 'out.wav'."
+  echo "Beginning silence is removed and the audio is normalized."
+  exit
+fi
+
+# Use 'out' as a default file name, make sure that it has a 'wav' extension
+output="${1:-out}"
+output="${output%%.wav}.wav"
+
+if [[ -e "$output" ]]; then
+  echo "File '$output' already exists!"
+  exit 1
+fi
+
+device="$2"
+
+echo "Recording audio from '$device' to '$output'"
+echo 'Press [q] to stop, [?] for help'
+ffmpeg -f pulse -i "$device" -f wav -loglevel quiet -stats - | \
+  ffmpeg -i - -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' -loglevel quiet "$output"
