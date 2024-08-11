@@ -1,0 +1,77 @@
+#!/usr/bin/env lua
+
+local function usage()
+  print("usage: "..string.gsub(arg[0], '.*/', '').." <Audio file> <Artist> <Cue file>")
+  print()
+  print("  Cue file in a multiple-line format:")
+  print("    {time} {title}")
+  print()
+  print("  where:")
+  print("    time - is in ffmpeg timesampt format, e.g. like 1:23")
+  print("    title - track title without artist(s) name, will be used for filename")
+end
+
+if #arg ~= 3 then
+  usage()
+  os.exit(1)
+end
+
+-- Przerobić wczytywanie tak by skrypt korzystał z dwóch tablic
+--   - titles[] = po prostu kolejne tytuły
+--   - timestamps[] = po prostu kolejne timestampy
+-- Cały myk polega na tym, że po wczytaniu można po prostu odwłowyać się do indeksów
+-- w tych tablicach, tak że dla timestampów bierzemy na startowy obecny, a na końcowy
+-- bierzemy indeks następnika. dla ostatniego elementu będzie po prostu nil, czyli elegancko
+
+AudioInput = arg[1]
+Artist = arg[2]
+CueFile = arg[3]
+
+Cmd = string.format("ffmpeg -i '%s' ", AudioInput)
+os.execute(string.format('mkdir -p %q', Artist))
+
+Tracks = {}
+for line in io.lines(CueFile) do
+  local timestamp, title = line:gmatch('([0-9:]+) (.*)')()
+  table.insert(Tracks, {
+    title = Artist..'/'..Artist..' - '..title..'.mp3',
+    ss = timestamp,
+    to = nil,
+  })
+end
+
+for i = 2, #Tracks do
+  Tracks[i - 1].to = Tracks[i].ss
+end
+
+-- Print intermediate ffmpeg commands
+for _, e in ipairs(Tracks) do
+  local flags = ''
+
+  -- Prepare the flags for the final command
+  flags = flags .. string.format('-ss %s ', e.ss)
+  if e.to then
+    flags = flags .. string.format('-to %s ', e.to)
+  end
+  flags = flags .. string.format('-c copy %q ', e.title)
+
+  -- Cache the flags
+  e.flags = flags
+
+  print(Cmd .. flags)
+end
+
+for _, e in ipairs(Tracks) do
+  Cmd = Cmd .. e.flags
+end
+
+print(Cmd)
+os.execute(Cmd)
+
+-- -- print table
+-- for idx, e in ipairs(Tracks) do
+--   print(idx .. ":")
+--   for k, v in pairs(e) do
+--     print("  " .. k .. " = " .. v)
+--   end
+-- end
