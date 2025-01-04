@@ -19,9 +19,9 @@ if [[ -e "$output" ]]; then
   exit 1
 fi
 
-device=$(pactl list short sources | grep 'analog-stereo.monitor' | cut --field=2)
+device=$(pactl list short sources | grep 'pro-output-0.monitor' | cut --field=2)
 
 echo "Recording audio from '$device' to '$output'"
 echo 'Press [q] to stop, [?] for help'
-ffmpeg -f pulse -i "$device" -f wav -loglevel quiet -stats - | \
+ffmpeg -f pulse -i "$device" -ar 48000 -f wav -loglevel quiet -stats - | \
   ffmpeg -i - -af 'silenceremove=start_periods=1,loudnorm=I=-13:LRA=50' -loglevel quiet "$output"
