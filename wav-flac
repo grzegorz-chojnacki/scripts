@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Get all WAV files from the current directory
+files=$(find . -type f -iname '*.wav')
+count=$(echo "$files" | wc -l)
+
+read -p "Do you want to convert ${count} files? [y/N]: " yn
+case $yn in
+    [Yy]*) echo "Converting files:" ;;
+    *) echo "Aborted" ; exit 0 ;;
+esac
+
+# Convert WAVs to FLACs in parallel (maximum number of jobs)
+echo "$files" | parallel -j0 --bar ffmpeg -loglevel quiet -i {} {.}.flac
+
+echo -n 'WAV:  '
+  find . -type f -iname '*.wav'  -print0 | du -ch --files0-from=- | tail -n1
+echo -n 'FLAC: '
+  find . -type f -iname '*.flac' -print0 | du -ch --files0-from=- | tail -n1
